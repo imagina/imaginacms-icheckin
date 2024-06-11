@@ -4,13 +4,13 @@
     "type": "asgard-module",
     "license": "MIT",
     "require": {
-        "php": ">=7.2.0",
+        "php": "^8.1",
         "composer/installers": "~1.0",
-        "imagina/core-module": "v8.x-dev"
+        "imagina/core-module": "^10.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.0",
-        "orchestra/testbench": "3.5.*"
+        "orchestra/testbench": "^8.5",
+        "phpunit/phpunit": "^10"
     },
     "autoload-dev": {
         "psr-4": {
@@ -18,7 +18,7 @@
             "Modules\\": "Modules/"
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "authors": [
         {
@@ -27,13 +27,9 @@
         }
     ],
     "extra": {
-        "laravel": {
-            "providers": [
-                "Modules\\Icheckin\\Providers\\IcheckinServiceProvider"
-            ],
-            "aliases": {
-                
-            }
+ 
+        "branch-alias": {
+            "dev-v10.x": "10.0.x-dev"
         }
     },
     "autoload": {

@@ -3,32 +3,31 @@
 namespace Modules\Icheckin\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Core\Traits\CanPublishConfiguration;
 use Modules\Core\Events\BuildingSidebar;
 use Modules\Core\Events\LoadingBackendTranslations;
+use Modules\Core\Traits\CanPublishConfiguration;
 use Modules\Icheckin\Events\Handlers\RegisterIcheckinSidebar;
 use Modules\Icheckin\Http\Middleware\CanCheckout;
 
 class IcheckinServiceProvider extends ServiceProvider
 {
     use CanPublishConfiguration;
+
     /**
      * Indicates if loading of the provider is deferred.
      *
      * @var bool
      */
     protected $defer = false;
-  
-  
-  protected $middleware = [
-    'checkout-can' => CanCheckout::class,
-  ];
+
+    protected $middleware = [
+        'checkout-can' => CanCheckout::class,
+    ];
+
     /**
      * Register the service provider.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->registerBindings();
         $this->app['events']->listen(BuildingSidebar::class, RegisterIcheckinSidebar::class);
@@ -37,33 +36,27 @@ class IcheckinServiceProvider extends ServiceProvider
             $event->load('jobs', array_dot(trans('icheckin::jobs')));
             $event->load('requests', array_dot(trans('icheckin::requests')));
             $event->load('shifts', array_dot(trans('icheckin::shifts')));
-     
+
             $event->load('approvals', array_dot(trans('icheckin::approvals')));
             // append translations
-
-
-
-
-
         });
     }
 
-    public function boot()
+    public function boot(): void
     {
-      $this->registerMiddleware();
+        $this->registerMiddleware();
         $this->publishConfig('icheckin', 'permissions');
-
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->mergeConfigFrom($this->getModuleConfigFilePath('icheckin', 'cmsPages'), 'asgard.icheckin.cmsPages');
+        $this->mergeConfigFrom($this->getModuleConfigFilePath('icheckin', 'cmsSidebar'), 'asgard.icheckin.cmsSidebar');
+        //$this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array
      */
-    public function provides()
+    public function provides(): array
     {
-        return array();
+        return [];
     }
 
     private function registerBindings()
@@ -104,7 +97,7 @@ class IcheckinServiceProvider extends ServiceProvider
                 return new \Modules\Icheckin\Repositories\Cache\CacheShiftDecorator($repository);
             }
         );
-    
+
         $this->app->bind(
             'Modules\Icheckin\Repositories\ApprovalRepository',
             function () {
@@ -117,17 +110,13 @@ class IcheckinServiceProvider extends ServiceProvider
                 return new \Modules\Icheckin\Repositories\Cache\CacheApprovalDecorator($repository);
             }
         );
-// add bindings
-
-
-
-
-
+        // add bindings
     }
+
   private function registerMiddleware()
   {
-    foreach ($this->middleware as $name => $class) {
-      $this->app['router']->aliasMiddleware($name, $class);
-    }
+      foreach ($this->middleware as $name => $class) {
+          $this->app['router']->aliasMiddleware($name, $class);
+      }
   }
 }
